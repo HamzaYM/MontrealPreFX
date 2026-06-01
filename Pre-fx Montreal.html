@@ -1,0 +1,2913 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pre-f(x) Montréal · MIT Sloan</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="image-slot.js"></script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<template id="__bundler_thumbnail" data-bg-color="#f1ece1">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#f1ece1"/>
+    <!-- "MTL" stacked monogram, Klein-blue, serif -->
+    <text x="600" y="380" text-anchor="middle"
+          font-family="'Instrument Serif', Georgia, serif"
+          font-size="280" fill="#002fa7" font-style="italic">Pré-f(x)</text>
+    <text x="600" y="540" text-anchor="middle"
+          font-family="'Instrument Serif', Georgia, serif"
+          font-size="200" fill="#0a0a0e">Montréal</text>
+    <!-- accent rule -->
+    <line x1="380" y1="610" x2="820" y2="610" stroke="#002fa7" stroke-width="3"/>
+    <text x="600" y="680" text-anchor="middle"
+          font-family="'JetBrains Mono', monospace"
+          font-size="34" fill="#6f6b65" letter-spacing="8">SEP 4 — 8 · 2026</text>
+  </svg>
+</template>
+
+<style>
+:root {
+  /* Default palette: Klein blue on cream */
+  --bg: #f1ece1;
+  --bg-2: #e8e2d2;
+  --ink: #0a0a0e;
+  --ink-2: #1e2030;
+  --muted: #6f6b65;
+  --rule: #0a0a0e;
+  --accent: #002fa7;
+  --accent-2: #0d1b3d;
+  --card: #faf6eb;
+  --serif: "Instrument Serif", "Times New Roman", serif;
+  --sans: "Manrope", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --maxw: 1440px;
+  --gutter: clamp(20px, 4vw, 64px);
+}
+
+[data-palette="klein"] {
+  --bg: #f1ece1;
+  --bg-2: #e8e2d2;
+  --ink: #0a0a0e;
+  --ink-2: #1e2030;
+  --muted: #6f6b65;
+  --rule: #0a0a0e;
+  --accent: #002fa7;
+  --accent-2: #0d1b3d;
+  --card: #faf6eb;
+}
+
+[data-palette="cream"] {
+  --bg: #f3ede2;
+  --bg-2: #ebe3d3;
+  --ink: #1a1a1a;
+  --ink-2: #3a3530;
+  --muted: #7a7268;
+  --rule: #1a1a1a;
+  --accent: #c8341f;
+  --accent-2: #e8b923;
+  --card: #faf6ec;
+}
+
+[data-palette="midnight"] {
+  --bg: #0e0d12;
+  --bg-2: #16151c;
+  --ink: #f2ece0;
+  --ink-2: #c8c1b3;
+  --muted: #8a8378;
+  --rule: #2c2932;
+  --accent: #ff5b3a;
+  --accent-2: #b4ff5a;
+  --card: #1a181f;
+}
+
+[data-palette="garden"] {
+  --bg: #eef0e6;
+  --bg-2: #e3e7d5;
+  --ink: #1f2a1a;
+  --ink-2: #344229;
+  --muted: #6b7a5a;
+  --rule: #1f2a1a;
+  --accent: #d2493a;
+  --accent-2: #e5b13a;
+  --card: #f6f7ee;
+}
+
+
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+.serif { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; }
+.mono { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.italic { font-style: italic; }
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+/* ───────────── Layout primitives ───────────── */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+.rule { height: 1px; background: var(--rule); opacity: 0.85; }
+.rule-thin { height: 1px; background: var(--rule); opacity: 0.2; }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+}
+
+.section-tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 18px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 48px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ───────────── TOP BAR ───────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+  backdrop-filter: blur(8px);
+}
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px var(--gutter);
+  gap: 24px;
+}
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--serif);
+  font-size: 22px;
+}
+.brand-mark {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.nav {
+  display: flex;
+  gap: 28px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.nav a { opacity: 0.7; transition: opacity .2s; }
+.nav a:hover { opacity: 1; }
+.cta {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .2s;
+}
+.cta:hover { transform: translateY(-1px); }
+.cta-accent { background: var(--accent); color: #fff; }
+.cta .arrow { display: inline-block; transition: transform .2s; }
+.cta:hover .arrow { transform: translateX(3px); }
+
+/* ───────────── HERO ───────────── */
+.hero {
+  position: relative;
+  padding: 32px 0 0;
+  border-bottom: 1px solid var(--rule);
+}
+.hero-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: 24px;
+}
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(72px, 14vw, 240px);
+  line-height: 0.88;
+  letter-spacing: -0.025em;
+  margin: 0;
+  padding: 16px 0 24px;
+  font-weight: 400;
+}
+.hero-title .accent-word {
+  font-style: italic;
+  color: var(--accent);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+  padding: 8px 0 36px;
+}
+.hero-grid > .hero-photo,
+.hero-grid > p {
+  align-self: stretch;
+}
+.hero-photo {
+  background: var(--bg-2) center/cover no-repeat;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  min-height: 480px;
+}
+.hero-photo.tall,
+.hero-photo.wide { aspect-ratio: auto; }
+.hero-photo .cap {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: space-between;
+}
+.hero-blurb {
+  max-width: 380px;
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.hero-blurb::first-letter {
+  font-size: 1.6em;
+  float: left;
+  line-height: 0.9;
+  padding: 6px 8px 0 0;
+  color: var(--accent);
+}
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-top: 0;
+}
+.hero-stat {
+  padding: 22px 20px;
+  border-right: 1px solid var(--rule);
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.hero-stat .val {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1;
+}
+.hero-stat .val .small { font-size: 16px; color: var(--muted); }
+
+/* ───────────── INTRO / DEK ───────────── */
+.dek {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: clamp(24px, 6vw, 96px);
+  padding: 96px 0;
+  align-items: start;
+}
+.dek-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dek-body {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.2vw, 44px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+.dek-body em { color: var(--accent); }
+.dek-meta {
+  margin-top: 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.dek-meta span { display: inline-flex; align-items: center; gap: 8px; }
+.dek-meta .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+
+/* ───────────── FEATURE STRIP ───────────── */
+.feat-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  padding: 0 0 96px;
+}
+.feat-card {
+  aspect-ratio: 4/5;
+  background: var(--bg-2);
+  position: relative;
+  overflow: hidden;
+}
+.feat-card .slot-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.feat-card > .num, .feat-card > .title { z-index: 2; }
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.feat-card.tall { aspect-ratio: 4/5; }
+.feat-card .num {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+}
+.feat-card .title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1.05;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+}
+.feat-card .title .sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+/* ───────────── AGENDA (loose) ───────────── */
+.agenda { padding: 96px 0; border-top: 1px solid var(--rule); }
+.agenda-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 80px;
+  align-items: end;
+}
+.agenda-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(64px, 10vw, 156px);
+  line-height: 0.9;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+.agenda-head h2 em { color: var(--accent); }
+.agenda-head p {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink-2);
+  margin: 0;
+  align-self: end;
+}
+
+.agenda-cat { margin-bottom: 72px; }
+.agenda-cat:last-child { margin-bottom: 0; }
+
+.agenda-cat-head {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 24px;
+  align-items: baseline;
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--rule);
+}
+.agenda-cat-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.agenda-cat-head h3 {
+  font-family: var(--serif);
+  font-size: clamp(36px, 4.5vw, 56px);
+  line-height: 1;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.agenda-cat-head h3 em { color: var(--accent); font-style: italic; }
+.agenda-cat-note {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--rule) 30%, transparent);
+}
+.agenda-card {
+  padding: 26px 24px;
+  border-right: 1px solid color-mix(in srgb, var(--rule) 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 30%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 220px;
+  transition: background .2s;
+  background: transparent;
+}
+.agenda-card:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.agenda-card.is-anchor { background: var(--card); }
+.agenda-card.is-anchor:hover { background: color-mix(in srgb, var(--accent) 8%, var(--card)); }
+
+.agenda-card .num {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.agenda-card.is-anchor .num { color: var(--accent); }
+.agenda-card h4 {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.1;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+.agenda-card p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin: 0;
+}
+.agenda-card .meta {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  gap: 12px;
+}
+.agenda-card .tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 9px;
+  white-space: nowrap;
+}
+.agenda-card .tag.day { color: var(--ink); border-color: var(--ink); }
+.agenda-card .tag.night { color: var(--accent-2); border-color: var(--accent-2); }
+.agenda-card .tag.house { color: var(--muted); border-color: color-mix(in srgb, var(--muted) 50%, transparent); }
+
+/* ───────────── ITINERARY TIMELINE ───────────── */
+.itin { padding: 80px 0; border-top: 1px solid var(--rule); }
+.itin-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 64px;
+}
+.itin-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 128px);
+  line-height: 0.92;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.itin-head h2 em { color: var(--accent); }
+.itin-head p {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink-2);
+  margin: 0;
+  align-self: end;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0;
+}
+.day {
+  display: contents;
+}
+.day-rail {
+  border-right: 1px solid var(--rule);
+  padding: 32px 24px 32px 0;
+  position: relative;
+}
+.day-rail::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: 38px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--ink);
+}
+.day-rail.is-special::after { background: var(--accent); border-color: var(--accent); }
+.day-rail .day-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.day-rail .day-name {
+  font-family: var(--serif);
+  font-size: 36px;
+  line-height: 1;
+}
+.day-rail .day-name em { color: var(--accent); font-style: italic; }
+.day-rail .day-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.day-body {
+  padding: 32px 0 32px 36px;
+  border-bottom: 1px solid var(--rule);
+}
+.day:last-child .day-body,
+.day:last-child .day-rail { border-bottom: none; }
+.day:first-child .day-rail,
+.day:first-child .day-body { border-top: 1px solid var(--rule); }
+
+.event {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 32px;
+  padding: 14px 0;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--rule);
+  border-bottom-color: color-mix(in srgb, var(--rule) 25%, transparent);
+}
+.event:last-child { border-bottom: none; }
+.event .time {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.event .what {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1.2;
+}
+.event .what .desc {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-transform: none;
+}
+.event .tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 3px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.event .tag.muted { color: var(--muted); border-color: color-mix(in srgb, var(--muted) 50%, transparent); }
+.event .tag.food { color: var(--accent-2); border-color: var(--accent-2); }
+
+/* ───────────── NEIGHBORHOOD MAP ───────────── */
+.hoods { padding: 96px 0; border-top: 1px solid var(--rule); background: var(--bg-2); }
+.hoods-head {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 64px;
+  margin-bottom: 48px;
+  align-items: end;
+}
+.hoods-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: 0.92;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.hoods-head h2 em { color: var(--accent); }
+.hoods-head .lede {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.map-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.map-wrap {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  aspect-ratio: 4/3;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  align-self: start;
+}
+.map-svg { width: 100%; height: 100%; display: block; }
+.map-svg .river { fill: color-mix(in srgb, var(--accent-2) 18%, var(--bg)); stroke: color-mix(in srgb, var(--accent-2) 35%, var(--rule)); stroke-width: 0.6; }
+.map-svg .land { fill: var(--card); stroke: var(--rule); stroke-width: 0.3; stroke-opacity: 0.2; }
+.map-svg .mountain { fill: color-mix(in srgb, var(--accent) 12%, var(--bg-2)); stroke: color-mix(in srgb, var(--accent) 30%, var(--rule)); stroke-width: 0.5; stroke-dasharray: 2 2; }
+.map-svg .island { fill: color-mix(in srgb, var(--ink) 4%, var(--card)); stroke: var(--rule); stroke-width: 0.4; stroke-opacity: 0.5; }
+.map-svg .grid-line { stroke: var(--rule); stroke-width: 0.2; stroke-opacity: 0.15; }
+.map-svg text.label {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  fill: var(--muted);
+}
+.map-svg text.water {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 11px;
+  fill: color-mix(in srgb, var(--accent-2) 60%, var(--ink));
+  letter-spacing: 0.04em;
+}
+.map-svg .pin-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity .25s, r .25s;
+}
+.map-svg .pin:hover .pin-ring,
+.map-svg .pin.is-active .pin-ring { opacity: 0.6; }
+.map-svg .pin-dot {
+  fill: var(--ink);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+  transition: all .2s;
+  cursor: pointer;
+}
+.map-svg .pin:hover .pin-dot,
+.map-svg .pin.is-active .pin-dot { fill: var(--accent); r: 5; }
+.map-svg .pin-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: var(--ink);
+  font-weight: 500;
+  pointer-events: none;
+  transition: fill .2s;
+}
+.map-svg .pin:hover .pin-label,
+.map-svg .pin.is-active .pin-label { fill: var(--accent); }
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  background: var(--card);
+  filter: saturate(0.55) contrast(0.95);
+  cursor: grab;
+}
+.leaflet-map:active { cursor: grabbing; }
+.leaflet-control-attribution {
+  font-family: var(--mono) !important;
+  font-size: 8px !important;
+  letter-spacing: 0.08em;
+  background: color-mix(in srgb, var(--card) 85%, transparent) !important;
+  color: var(--muted) !important;
+}
+.leaflet-control-attribution a { color: var(--ink) !important; }
+.leaflet-control-zoom a {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--rule) !important;
+  font-family: var(--serif) !important;
+  font-weight: 400 !important;
+}
+.leaflet-control-zoom a:hover { background: var(--bg-2) !important; }
+.hood-marker {
+  background: transparent;
+  border: none;
+}
+.hood-marker .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--ink), 0 2px 6px rgba(0,0,0,0.25);
+  transition: all .2s;
+  cursor: pointer;
+}
+.hood-marker.is-active .dot,
+.hood-marker:hover .dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent), 0 2px 8px rgba(0,0,0,0.25);
+  transform: scale(1.15);
+}
+.hood-marker .lbl {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  transform: translateY(-50%);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  padding: 3px 7px;
+  border-radius: 2px;
+  pointer-events: none;
+  transition: all .15s;
+  font-weight: 500;
+}
+.hood-marker.left .lbl {
+  left: auto;
+  right: 18px;
+}
+.hood-marker.is-active .lbl,
+.hood-marker:hover .lbl {
+  color: var(--accent);
+  background: var(--card);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.map-compass {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+.hood-panel {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.hood-panel .num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.hood-panel h3 {
+  font-family: var(--serif);
+  font-size: 48px;
+  line-height: 0.95;
+  margin: 0 0 4px 0;
+  font-weight: 400;
+}
+.hood-panel h3 em { color: var(--accent); }
+.hood-panel .fr {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--muted);
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+.hood-panel .photo {
+  position: relative;
+  aspect-ratio: 16/10;
+  background: var(--bg-2);
+  margin-bottom: 18px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.hood-panel .photo image-slot {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.hood-panel p {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin: 0 0 16px;
+}
+.hood-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  border-top: 1px solid var(--rule);
+}
+.hood-panel li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 25%, transparent);
+  font-size: 13px;
+}
+.hood-panel li .what {
+  font-family: var(--serif);
+  font-size: 16px;
+}
+.hood-panel li .when {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hood-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.hood-pill {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.hood-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.hood-tab {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  transition: all .15s;
+}
+.hood-tab:hover { background: color-mix(in srgb, var(--rule) 8%, transparent); }
+.hood-tab.is-active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+/* ───────────── AIRBNB ───────────── */
+.bnb { padding: 96px 0; border-top: 1px solid var(--rule); }
+.bnb-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.bnb-hero {
+  aspect-ratio: 4/5;
+  background: var(--bg-2) center/cover no-repeat;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+.bnb-hero .badge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+.bnb-content h2 {
+  font-family: var(--serif);
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: 0.95;
+  margin: 0 0 8px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.bnb-content h2 em { color: var(--accent); }
+.bnb-content .fr {
+  font-style: italic;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 22px;
+  margin-bottom: 24px;
+}
+.bnb-content p {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.bnb-specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  margin: 32px 0;
+  border-top: 1px solid var(--rule);
+}
+.bnb-spec {
+  padding: 18px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 25%, transparent);
+}
+.bnb-spec .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.bnb-spec .val {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.1;
+}
+.bnb-thumbs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.bnb-thumb {
+  aspect-ratio: 1/1;
+  background: var(--bg-2) center/cover no-repeat;
+  border-radius: 2px;
+}
+
+/* ───────────── LEADERS ───────────── */
+.leaders { padding: 96px 0; border-top: 1px solid var(--rule); background: var(--bg-2); }
+.leader-rows {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--rule);
+}
+.leader-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 48px;
+  padding: 56px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.leader-row:nth-child(even) {
+  grid-template-columns: 1fr 280px;
+}
+.leader-row:nth-child(even) .leader-photo {
+  order: 2;
+}
+.leader-row:nth-child(even) .leader-content {
+  order: 1;
+  text-align: right;
+}
+.leader-row:nth-child(even) .leader-content .tidbits {
+  text-align: left;
+}
+.leader-photo image-slot { display: none; }
+.leader-photo .frame-corner { z-index: 2; pointer-events: none; }
+.leader-photo {
+  aspect-ratio: 4/5;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.leader-photo .initial {
+  font-family: var(--serif);
+  font-size: 180px;
+  line-height: 1;
+  color: var(--accent);
+  font-style: italic;
+}
+.leader-photo .frame-corner {
+  position: absolute;
+  top: 0; left: 0;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 14px;
+}
+.leader-photo .frame-corner.tr { left: auto; right: 0; text-align: right; }
+.leader-photo .frame-corner.bl { top: auto; bottom: 0; }
+.leader-photo .frame-corner.br { top: auto; bottom: 0; left: auto; right: 0; text-align: right; }
+
+.leader-content {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.leader-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+.leader-content h3 {
+  font-family: var(--serif);
+  font-size: clamp(48px, 6vw, 84px);
+  line-height: 0.95;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.leader-content .bio {
+  font-family: var(--serif);
+  font-size: 21px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+.leader-row:nth-child(even) .leader-content .bio { margin-left: auto; }
+.leader-content .bio em { color: var(--accent); font-style: italic; }
+
+.tidbits {
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--rule) 30%, transparent);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 8px;
+}
+.tidbit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tidbit .k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tidbit .v {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+/* ───────────── FOOD ───────────── */
+.food { padding: 96px 0; border-top: 1px solid var(--rule); }
+.food-head {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+  align-items: end;
+  margin-bottom: 48px;
+}
+.food-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 128px);
+  line-height: 0.92;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.food-head h2 em { color: var(--accent); }
+.food-list {
+  border-top: 1px solid var(--rule);
+}
+.food-row {
+  display: grid;
+  grid-template-columns: 60px 2fr 1.2fr 1fr 120px;
+  gap: 32px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: center;
+  transition: background .2s;
+}
+.food-row:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.food-row .num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+.food-row .name {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1.1;
+}
+.food-row .name .fr {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--muted);
+  font-size: 16px;
+  display: block;
+  margin-top: 2px;
+}
+.food-row .what {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.food-row .hood {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.food-row .price {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+.food-row .tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  text-align: center;
+  justify-self: end;
+}
+.food-row .tag.must { background: var(--accent); color: #fff; }
+.food-row .tag.late { color: var(--accent-2); border-color: var(--accent-2); }
+
+/* ───────────── NIGHTLIFE ───────────── */
+.night { padding: 96px 0; border-top: 1px solid var(--rule); background: #0e0d12; color: #f2ece0; position: relative; overflow: hidden; }
+.night::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,91,58,0.18), transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(180,255,90,0.1), transparent 50%);
+  pointer-events: none;
+}
+.night > * { position: relative; z-index: 1; }
+.night .eyebrow,
+.night .mono { color: rgba(242,236,224,0.6); }
+.night-head {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  align-items: end;
+  margin-bottom: 48px;
+}
+.night-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(64px, 11vw, 160px);
+  line-height: 0.88;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+.night-head h2 em { color: #ff5b3a; font-style: italic; }
+.night-head .lede {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.4;
+  color: rgba(242,236,224,0.75);
+}
+.night-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.night-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  transition: all .25s;
+}
+.night-card-inner { display: contents; }
+.night-card:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,91,58,0.4);
+  transform: translateY(-2px);
+}
+.night-card .cat {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ff5b3a;
+  margin-bottom: auto;
+}
+.night-card h4 {
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1.05;
+  margin: 0 0 6px;
+  font-weight: 400;
+}
+.night-card .vibe {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(242,236,224,0.7);
+  margin-bottom: 12px;
+}
+.night-card .meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(242,236,224,0.5);
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ───────────── RAINY DAY ───────────── */
+.rainy { padding: 96px 0; border-top: 1px solid var(--rule); }
+.rainy-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 64px;
+  align-items: start;
+}
+.rainy h2 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 8vw, 112px);
+  line-height: 0.92;
+  margin: 0 0 16px;
+  font-weight: 400;
+}
+.rainy h2 em { color: var(--accent); }
+.rainy .lede {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.rainy-list { display: grid; gap: 18px; }
+.rainy-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  padding: 20px 24px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  align-items: center;
+}
+.rainy-item .ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+}
+.rainy-item .name {
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1.15;
+}
+.rainy-item .desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.rainy-item .when {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ───────────── PACKING ───────────── */
+.pack { padding: 96px 0; border-top: 1px solid var(--rule); background: var(--bg-2); }
+.pack-head {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+  align-items: end;
+  margin-bottom: 48px;
+}
+.pack-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: 0.92;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.pack-head h2 em { color: var(--accent); }
+.pack-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.pack-col h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.pack-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pack-col li {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.4;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 20%, transparent);
+}
+.pack-col li .fr {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 13px;
+  display: block;
+}
+.weather-card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  padding: 24px;
+  border-radius: 2px;
+  margin-top: 32px;
+}
+.weather-card .head {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.weather-days {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+.weather-day .d {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.weather-day .t {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1;
+  margin: 8px 0 4px;
+}
+.weather-day .c {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+/* ───────────── FAQ ───────────── */
+.faq { padding: 96px 0; border-top: 1px solid var(--rule); }
+.faq-head {
+  margin-bottom: 48px;
+}
+.faq-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: 0.92;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.faq-head h2 em { color: var(--accent); }
+.faq-list { border-top: 1px solid var(--rule); }
+.faq-item { border-bottom: 1px solid var(--rule); }
+.faq-q {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 32px;
+  padding: 24px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  align-items: center;
+  font-family: inherit;
+  color: inherit;
+}
+.faq-q .num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+.faq-q .text {
+  font-family: var(--serif);
+  font-size: 28px;
+  line-height: 1.15;
+}
+.faq-q .toggle {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-style: italic;
+  color: var(--accent);
+  transition: transform .25s;
+}
+.faq-item.is-open .faq-q .toggle { transform: rotate(45deg); }
+.faq-a {
+  display: none;
+  padding: 0 0 28px 92px;
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 800px;
+}
+.faq-item.is-open .faq-a { display: block; }
+
+/* ───────────── CLOSING CTA ───────────── */
+.closer {
+  padding: 120px 0;
+  border-top: 1px solid var(--rule);
+  background: var(--ink);
+  color: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.closer::before {
+  content: "MTL · 2026 · ";
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  font-family: var(--serif);
+  font-size: 200px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0.04;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+.closer-inner { position: relative; z-index: 1; text-align: center; }
+.closer .eyebrow { color: rgba(242,236,224,0.6); }
+.closer h2 {
+  font-family: var(--serif);
+  font-size: clamp(72px, 13vw, 220px);
+  line-height: 0.9;
+  margin: 24px 0 16px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+.closer h2 em { color: var(--accent); font-style: italic; }
+.closer .sub {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+  color: rgba(242,236,224,0.7);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.4;
+}
+.closer .big-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 22px 36px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  transition: transform .2s;
+}
+.closer .big-cta:hover { transform: translateY(-2px); }
+.closer .deadline {
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(242,236,224,0.5);
+}
+
+/* ───────────── FOOTER ───────────── */
+footer {
+  padding: 48px 0;
+  background: var(--ink);
+  color: rgba(242,236,224,0.5);
+  border-top: 1px solid rgba(242,236,224,0.1);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ───────────── STICKY RSVP ───────────── */
+.sticky-rsvp {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 40;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 14px 22px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transition: transform .2s, box-shadow .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.sticky-rsvp:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.2); }
+.sticky-rsvp .pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ───────────── image-slot integration ───────────── */
+.slot-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.slot-wrap image-slot {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.leader-photo image-slot {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  z-index: 1;
+}
+.leader-photo .frame-corner { z-index: 3; pointer-events: none; }
+.agenda-card .agenda-pic {
+  position: relative;
+  height: 130px;
+  margin: 0 -24px 18px;
+  background: var(--bg-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--rule) 30%, transparent);
+  overflow: hidden;
+}
+.agenda-card .agenda-pic image-slot {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.agenda-card.is-anchor .agenda-pic { border-bottom: 1px solid var(--rule); }
+.food-row .food-pic {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+.food-row .food-pic image-slot {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.night-card {
+  position: relative;
+  overflow: hidden;
+}
+.night-card .night-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+  filter: saturate(0.7) contrast(1.05);
+  transition: opacity .35s;
+}
+.night-card:hover .night-slot { opacity: 0.78; }
+.night-card .night-slot image-slot {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.night-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(15,15,20,0.05) 0%, rgba(15,15,20,0.55) 55%, rgba(15,15,20,0.92) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+.night-card > .night-card-inner,
+.night-card > .cat,
+.night-card > h4,
+.night-card > .vibe,
+.night-card > .meta { position: relative; z-index: 2; }
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .hero-stat:nth-child(2) { border-right: none; }
+  .hero-stat:nth-child(1), .hero-stat:nth-child(2) { border-bottom: 1px solid var(--rule); }
+  .dek { grid-template-columns: 1fr; padding: 64px 0; }
+  .feat-strip { grid-template-columns: 1fr; }
+  .agenda-head { grid-template-columns: 1fr; gap: 24px; margin-bottom: 48px; }
+  .agenda-cat-head { grid-template-columns: 1fr; gap: 6px; }
+  .agenda-cat-note { text-align: left; }
+  .itin-head { grid-template-columns: 1fr; }
+  .timeline { grid-template-columns: 1fr; }
+  .day { display: block; }
+  .day-rail { border-right: none; border-bottom: 1px solid var(--rule); padding: 24px 0; }
+  .day-rail::after { display: none; }
+  .day-body { padding: 24px 0; border-bottom: 1px solid var(--rule); }
+  .event { grid-template-columns: 80px 1fr; }
+  .event .tag { grid-column: 2; justify-self: start; margin-top: 4px; }
+  .hoods-head, .food-head, .pack-head, .night-head, .bnb-layout, .rainy-layout { grid-template-columns: 1fr; }
+  .map-layout { grid-template-columns: 1fr; }
+  .leader-row, .leader-row:nth-child(even) {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 40px 0;
+  }
+  .leader-row:nth-child(even) .leader-photo { order: 0; }
+  .leader-row:nth-child(even) .leader-content { order: 0; text-align: left; }
+  .leader-row:nth-child(even) .leader-content .bio { margin-left: 0; }
+  .tidbits { grid-template-columns: 1fr; }
+  .pack-grid { grid-template-columns: repeat(2, 1fr); }
+  .weather-days { grid-template-columns: repeat(5, 1fr); }
+  .night-grid { grid-template-columns: 1fr 1fr; }
+  .food-row { grid-template-columns: 40px 1fr; gap: 16px; }
+  .food-row .what, .food-row .hood { grid-column: 2; }
+  .food-row .tag { grid-column: 2; justify-self: start; }
+  .nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TWEAK DEFAULTS ═══════════ -->
+<script>
+window.__TWEAKS = /*EDITMODE-BEGIN*/{
+  "palette": "klein",
+  "density": "comfy",
+  "showAccentItalics": true
+}/*EDITMODE-END*/;
+</script>
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<div class="topbar" data-screen-label="00 Topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="serif">Pre-f(x)</span>
+      <span class="brand-mark">MIT Sloan · MTL 2026</span>
+    </div>
+    <nav class="nav">
+      <a href="#itinerary">Itinerary</a>
+      <a href="#hoods">Neighborhoods</a>
+      <a href="#stay">The House</a>
+      <a href="#leaders">Leaders</a>
+      <a href="#food">Food</a>
+      <a href="#night">Nightlife</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a href="https://sloangroups.mit.edu/mbaprefx/rsvp_boot?id=1935992" target="_blank" rel="noopener" class="cta cta-accent">
+      RSVP <span class="arrow">→</span>
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════ HERO ═══════════ -->
+<header class="hero" data-screen-label="01 Hero">
+  <div class="wrap">
+    <div class="hero-meta">
+      <span>Issue N°01 · La Belle Province</span>
+      <span>An MIT Sloan Pre-f(x) Trip · Cohort '28</span>
+      <span>Sep 4 — 8, 2026</span>
+    </div>
+
+    <h1 class="hero-title">
+      <span>Bonjour,</span><br>
+      <span class="accent-word">Montréal</span>
+    </h1>
+
+    <div class="hero-grid">
+      <div class="hero-photo tall">
+        <div class="slot-wrap"><image-slot id="hero-1" shape="rect" fit="cover" placeholder="Drop a hero photo · Montréal" src="https://commons.wikimedia.org/wiki/Special:FilePath/Old%20Montreal%2C%20Montreal%2C%20Canada%20(Unsplash%20qAuLtiphx2E).jpg?width=900"></image-slot></div>
+        <div class="cap"><span>Vieux-Montréal</span><span>01</span></div>
+      </div>
+      <div class="hero-blurb">
+        Four nights in a city that runs on espresso in the morning, smoked-meat sandwiches at noon, and an upright bass somewhere on Saint-Laurent after midnight. You're invited — <em>bring your appetite.</em>
+      </div>
+      <div class="hero-photo wide">
+        <div class="slot-wrap"><image-slot id="hero-plateau" shape="rect" fit="cover" placeholder="Drop a Plateau photo here"></image-slot></div>
+        <div class="cap"><span>Plateau Mont-Royal</span><span>02</span></div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="lbl">Dates</div>
+        <div class="val">Sep 4<span class="small"> → </span>8</div>
+      </div>
+      <div class="hero-stat">
+        <div class="lbl">Duration</div>
+        <div class="val">4 <span class="small">nights / 5 days</span></div>
+      </div>
+      <div class="hero-stat">
+        <div class="lbl">Lodging</div>
+        <div class="val">1 <span class="small">house, all of us</span></div>
+      </div>
+      <div class="hero-stat">
+        <div class="lbl">Spots</div>
+        <div class="val">20 <span class="small">/ filling fast</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ DEK / INTRO ═══════════ -->
+<section class="wrap dek" data-screen-label="02 Intro">
+  <div>
+    <div class="dek-eyebrow">A note from your trip leaders</div>
+  </div>
+  <div>
+    <p class="dek-body">
+      Before the cases, the cold-calls, and the 8:30 a.m. lectures — we're stealing five days for the city we love most. Old-world cobblestone, the best bagels on the continent, a mountain in the middle of downtown, and a nightlife that doesn't <em>start</em> until you'd normally be asleep.
+    </p>
+    <div class="dek-meta">
+      <span><span class="dot"></span> Friday dinner</span>
+      <span><span class="dot"></span> Saturday market lunch</span>
+      <span><span class="dot"></span> Sunday rooftop</span>
+      <span><span class="dot"></span> Monday spa at sunset</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FEATURE STRIP ═══════════ -->
+<section class="wrap feat-strip">
+  <div class="feat-card">
+    <div class="slot-wrap"><image-slot id="feat-mont-royal" shape="rect" fit="cover" placeholder="Drop a Mont-Royal photo"></image-slot></div>
+    <div class="num">N° 01 — Vista</div>
+    <div class="title"><span class="sub">From the summit</span>Mont-Royal at golden hour</div>
+  </div>
+  <div class="feat-card tall">
+    <div class="slot-wrap"><image-slot id="feat-atwater" shape="rect" fit="cover" placeholder="Drop a Marché Atwater photo"></image-slot></div>
+    <div class="num">N° 02 — Marché</div>
+    <div class="title"><span class="sub">À table</span>Atwater on a Saturday</div>
+  </div>
+  <div class="feat-card tall">
+    <div class="slot-wrap"><image-slot id="feat-nuit" shape="rect" fit="cover" placeholder="Drop a Saint-Laurent night photo"></image-slot></div>
+    <div class="num">N° 03 — Nuit</div>
+    <div class="title"><span class="sub">After hours</span>Saint-Laurent until 3 a.m.</div>
+  </div>
+</section>
+
+<!-- Sections will be appended below via inline content -->
+
+<!-- ═══════════ AGENDA (loose) ═══════════ -->
+<section class="agenda" id="itinerary" data-screen-label="03 Agenda">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 01 — Le programme</span><span>Five days · The menu, not the recipe</span></div>
+    <div class="agenda-head">
+      <h2>The <em>agenda,</em><br>loosely.</h2>
+      <p>No hour-by-hour itinerary. We've got a handful of group anchors — show up for those — and a long menu of other things to slot in on whatever day the weather and the mood agree.</p>
+    </div>
+
+    <!-- ANCHORS -->
+    <div class="agenda-cat">
+      <div class="agenda-cat-head">
+        <span class="agenda-cat-num">§ 01</span>
+        <h3>Group anchors</h3>
+        <span class="agenda-cat-note">The five things everyone shows up to.</span>
+      </div>
+      <div class="agenda-grid">
+        <div class="agenda-card is-anchor">
+          <div class="num">N°01</div>
+          <h4>Welcome dinner</h4>
+          <p>Long table somewhere in the Plateau. French wine, loud French, the first round of names you'll forget.</p>
+          <div class="meta"><span>Friday · Plateau</span><span class="tag">Anchor</span></div>
+        </div>
+        <div class="agenda-card is-anchor">
+          <div class="num">N°02</div>
+          <h4>BBQ at Parc La Fontaine</h4>
+          <p>Duck pond, blanket, charcuterie. The slow afternoon of the trip.</p>
+          <div class="meta"><span>Monday · Plateau</span><span class="tag">Anchor</span></div>
+        </div>
+        <div class="agenda-card is-anchor">
+          <div class="num">N°03</div>
+          <h4>Bota Bota at sunset</h4>
+          <p>Nordic spa on a moored ferry in the Old-Port. Book ahead, bring sandals.</p>
+          <div class="meta"><span>Old-Port</span><span class="tag">Anchor</span></div>
+        </div>
+        <div class="agenda-card is-anchor">
+          <div class="num">N°04</div>
+          <h4>Barranco — final dinner</h4>
+          <p>Peruvian, family-style, all of us at one table for the last loud meal.</p>
+          <div class="meta"><span>Plateau</span><span class="tag">Anchor</span></div>
+        </div>
+        <div class="agenda-card is-anchor">
+          <div class="num">N°05</div>
+          <h4>Centre-ville together</h4>
+          <p>A proper afternoon downtown — we'll wander, hit a museum or a patio, end up at a terrace somewhere.</p>
+          <div class="meta"><span>Centre-ville</span><span class="tag">Anchor</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAYTIME -->
+    <div class="agenda-cat">
+      <div class="agenda-cat-head">
+        <span class="agenda-cat-num">§ 02</span>
+        <h3>Daytime — <em>la journée</em></h3>
+        <span class="agenda-cat-note">Pick a few. The sun is up for fourteen hours.</span>
+      </div>
+      <div class="agenda-grid">
+        <div class="agenda-card">
+          <div class="num">N°06</div>
+          <h4>Lachine Canal run or bike</h4>
+          <p>Flat, scenic, finishes at the Atwater Market. Espresso for the walk back.</p>
+          <div class="meta"><span>Saint-Henri</span><span class="tag day">Movement</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°07</div>
+          <h4>Old-Port wander</h4>
+          <p>Cobblestone, Notre-Dame, an espresso somewhere with a view of the river.</p>
+          <div class="meta"><span>Vieux-Montréal</span><span class="tag day">Stroll</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°08</div>
+          <h4>Atwater Market lunch</h4>
+          <p>Cheese, baguette, charcuterie, oysters, a peach the size of your fist.</p>
+          <div class="meta"><span>Saint-Henri</span><span class="tag day">Marché</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°09</div>
+          <h4>Mont-Royal lookout</h4>
+          <p>Walk up via the stairs to earn it, or via Camillien-Houde if you don't.</p>
+          <div class="meta"><span>Mont-Royal</span><span class="tag day">Vista</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°10</div>
+          <h4>Plateau thrifting</h4>
+          <p>Mont-Royal and Saint-Denis. Vintage Levi's, Québécois bookshops, the staircases.</p>
+          <div class="meta"><span>Plateau</span><span class="tag day">Shops</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°11</div>
+          <h4>Jardin Botanique + Biodôme</h4>
+          <p>~$14 USD. Worth it for the Chinese and Japanese gardens alone.</p>
+          <div class="meta"><span>Hochelaga</span><span class="tag day">Optional</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°12</div>
+          <h4>Parc Jean-Drapeau</h4>
+          <p>The island park. Biosphère, beach, the F1 circuit if you brought running shoes.</p>
+          <div class="meta"><span>Île Sainte-Hélène</span><span class="tag day">Island</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°13</div>
+          <h4>Museums (rainy or not)</h4>
+          <p>MMFA, Pointe-à-Callière, or the brutalist concrete poem that is Habitat 67.</p>
+          <div class="meta"><span>Downtown / Old-Port</span><span class="tag day">Indoor</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NIGHT -->
+    <div class="agenda-cat">
+      <div class="agenda-cat-head">
+        <span class="agenda-cat-num">§ 03</span>
+        <h3>After dark — <em>la nuit</em></h3>
+        <span class="agenda-cat-note">Whoever's still up gets a vote.</span>
+      </div>
+      <div class="agenda-grid">
+        <div class="agenda-card">
+          <div class="num">N°14</div>
+          <h4>Saint-Laurent stroll</h4>
+          <p>The strip. Patios, bars, the slow hour between dinner and whatever's next.</p>
+          <div class="meta"><span>Plateau</span><span class="tag night">Bars</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°15</div>
+          <h4>Piknic Électronik</h4>
+          <p>Open-air DJ sets on the island. Day-into-night, sunscreen on, the closing party of the summer.</p>
+          <div class="meta"><span>Parc Jean-Drapeau</span><span class="tag night">DJ</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°16</div>
+          <h4>Rooftop sunset dinner</h4>
+          <p>One night, somewhere with a 360° view. Wear the outfit.</p>
+          <div class="meta"><span>Downtown / Old-Port</span><span class="tag night">Dîner</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°17</div>
+          <h4>A proper dance night</h4>
+          <p>Whatever's good that weekend — we'll scout the lineup and pick the room.</p>
+          <div class="meta"><span>TBD</span><span class="tag night">Club</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°18</div>
+          <h4>Jazz, karaoke, or a dive</h4>
+          <p>Upstairs for jazz, Pang Pang for karaoke rooms, Saint-Sulpice for the cheapest pitcher in town.</p>
+          <div class="meta"><span>Quartier Latin / Plateau</span><span class="tag night">Live</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AT THE HOUSE -->
+    <div class="agenda-cat">
+      <div class="agenda-cat-head">
+        <span class="agenda-cat-num">§ 04</span>
+        <h3>At the house — <em>chez nous</em></h3>
+        <span class="agenda-cat-note">Group bonding, in pajamas.</span>
+      </div>
+      <div class="agenda-grid">
+        <div class="agenda-card">
+          <div class="num">N°19</div>
+          <h4>Icebreakers + games</h4>
+          <p>Two truths, one terrible cold-call. Then whoever's still standing heads out.</p>
+          <div class="meta"><span>Friday</span><span class="tag house">Group</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°20</div>
+          <h4>Chilling together</h4>
+          <p>One slow morning. Coffee on the porch, no agenda, whoever's up is up. The reason we rented the whole house.</p>
+          <div class="meta"><span>The house</span><span class="tag house">Group</span></div>
+        </div>
+        <div class="agenda-card">
+          <div class="num">N°21</div>
+          <h4>Long porch conversations</h4>
+          <p>The reason we rented a townhouse instead of five hotel rooms.</p>
+          <div class="meta"><span>The house</span><span class="tag house">Open</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ NEIGHBORHOODS / MAP ═══════════ -->
+<section class="hoods" id="hoods" data-screen-label="04 Neighborhoods">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 02 — Les quartiers</span><span>Click a pin · Each neighborhood, in its own register</span></div>
+    <div class="hoods-head">
+      <h2>One island.<br><em>Six languages</em><br>of cool.</h2>
+      <p class="lede">Montréal isn't a single mood — every few blocks the city changes its accent, its menu, its hours. Here's where we'll be and why.</p>
+    </div>
+
+    <div class="map-layout">
+      <div class="map-wrap" id="map-wrap">
+        <div id="mtl-map" class="leaflet-map"></div>
+        <div class="map-legend">
+          ● Where we'll be · Click a pin
+        </div>
+      </div>
+
+      <div class="hood-panel" id="hood-panel">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ AIRBNB ═══════════ -->
+<section class="bnb" id="stay" data-screen-label="05 The House">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 03 — La maison</span><span>One house, all of us</span></div>
+    <div class="bnb-layout">
+      <div class="bnb-hero" style="background-image: url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200&q=80')">
+        <div class="badge">★ Superhost · Plateau</div>
+      </div>
+      <div class="bnb-content">
+        <h2>The <em>house.</em></h2>
+        <div class="fr">— Notre maison commune</div>
+        <p>A whole townhouse in the Plateau, walking distance from Saint-Laurent, the canal, and at least four bagel shops. Three levels, a rooftop terrace, and a kitchen large enough to cook for eighteen. We picked it for the porch.</p>
+
+        <div class="bnb-specs">
+          <div class="bnb-spec"><div class="lbl">Sleeps</div><div class="val">Up to 18</div></div>
+          <div class="bnb-spec"><div class="lbl">Beds</div><div class="val">23</div></div>
+          <div class="bnb-spec"><div class="lbl">Bathrooms</div><div class="val">8</div></div>
+          <div class="bnb-spec"><div class="lbl">Levels</div><div class="val">3 floors</div></div>
+          <div class="bnb-spec"><div class="lbl">Neighborhood</div><div class="val">Plateau Mont-Royal</div></div>
+          <div class="bnb-spec"><div class="lbl">Vibe</div><div class="val">Townhouse, porch</div></div>
+        </div>
+
+        <div class="bnb-thumbs">
+          <div class="bnb-thumb" style="background-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80')"></div>
+          <div class="bnb-thumb" style="background-image: url('https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80')"></div>
+          <div class="bnb-thumb" style="background-image: url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&q=80')"></div>
+        </div>
+
+        <p style="margin-top: 28px;">
+          <a href="https://airbnb.ca/rooms/39892994" target="_blank" rel="noopener" class="cta">
+            View the listing <span class="arrow">→</span>
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ LEADERS ═══════════ -->
+<section class="leaders" id="leaders" data-screen-label="06 Leaders">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 04 — Les hôtes</span><span>Five Sloanies signing for the Airbnb</span></div>
+    <div class="agenda-head" style="margin-bottom: 64px;">
+      <h2>Your <em>trip leaders.</em></h2>
+      <p>The people in the GroupMe who actually know what time the reservation is. Ask them anything; they'll either answer it or pretend to.</p>
+    </div>
+
+    <div class="leader-rows">
+
+      <article class="leader-row">
+        <div class="leader-photo">
+          <div class="frame-corner">N° 01</div>
+          <div class="frame-corner tr">MTL · 2026</div>
+          <div class="initial">S</div>
+          <div class="frame-corner bl">Boston, MA</div>
+          <div class="frame-corner br">Trip Director</div>
+        </div>
+        <div class="leader-content">
+          <div class="leader-tag">Pre-f(x) Director · Music &amp; Dance</div>
+          <h3>Susy Liu</h3>
+          <p class="bio">Boston native. A fan of all things music and dance. Pre-f(x) director, Atlantic Community Building Chair, and Rolling Sloans band member. Ex-BCG and exploring entrepreneurship.</p>
+          <div class="tidbits">
+            <div class="tidbit"><span class="k">Hometown</span><span class="v">Boston, MA</span></div>
+            <div class="tidbit"><span class="k">Before Sloan</span><span class="v">BCG</span></div>
+            <div class="tidbit"><span class="k">Vibe</span><span class="v">Rolling Sloans, band practice</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="leader-row">
+        <div class="leader-photo">
+          <div class="frame-corner">N° 02</div>
+          <div class="frame-corner tr">MTL · 2026</div>
+          <div class="initial">H</div>
+          <div class="frame-corner bl">Montréal, QC</div>
+          <div class="frame-corner br">Local Guide</div>
+        </div>
+        <div class="leader-content">
+          <div class="leader-tag">Local · Logistics &amp; Instigator-in-Chief</div>
+          <h3>Hamza Malik</h3>
+          <p class="bio">From Montréal, so you know you'll have a good time. Ex-consultant, AI-wiz, building two startups, Sloan Follies co-director. Does a frankly alarming number of <em>random</em> accents. Huge instigator.</p>
+          <div class="tidbits">
+            <div class="tidbit"><span class="k">Hometown</span><span class="v">Montréal, QC</span></div>
+            <div class="tidbit"><span class="k">Currently</span><span class="v">Building × 2 startups</span></div>
+            <div class="tidbit"><span class="k">Specialty</span><span class="v">Random accents, French, chaos</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="leader-row">
+        <div class="leader-photo">
+          <div class="frame-corner">N° 03</div>
+          <div class="frame-corner tr">MTL · 2026</div>
+          <div class="initial">P</div>
+          <div class="frame-corner bl">NC → NYC</div>
+          <div class="frame-corner br">Food &amp; Content</div>
+        </div>
+        <div class="leader-content">
+          <div class="leader-tag">Food Lead · Creator</div>
+          <h3>Pras Jain</h3>
+          <p class="bio">From NC, lived in NYC. Also an ex-consultant (clearly a very diverse cohort). Going into marketing and building a startup. Huge foodie — Montréal is some of the best food she's ever had. Also creates content: business, productivity, things learned in MBA.</p>
+          <div class="tidbits">
+            <div class="tidbit"><span class="k">Hometown</span><span class="v">NC, by way of NYC</span></div>
+            <div class="tidbit"><span class="k">Going into</span><span class="v">Marketing + a startup</span></div>
+            <div class="tidbit"><span class="k">Content</span><span class="v">Biz / productivity / MBA</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="leader-row">
+        <div class="leader-photo">
+          <div class="frame-corner">N° 04</div>
+          <div class="frame-corner tr">MTL · 2026</div>
+          <div class="initial">S</div>
+          <div class="frame-corner bl">Boston, MA</div>
+          <div class="frame-corner br">AI Club Co-Pres</div>
+        </div>
+        <div class="leader-content">
+          <div class="leader-tag">AI Club Co-President · Brunch Whisperer</div>
+          <h3>Sara Zhou</h3>
+          <p class="bio">From Boston. Went to the same high school <em>and</em> college as Susy, which is its own kind of suspicious. Previously data in health tech, PM internship over the summer. AI club co-president.</p>
+          <div class="tidbits">
+            <div class="tidbit"><span class="k">Hometown</span><span class="v">Boston, MA</span></div>
+            <div class="tidbit"><span class="k">Before Sloan</span><span class="v">Data, health tech</span></div>
+            <div class="tidbit"><span class="k">This summer</span><span class="v">PM intern</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="leader-row">
+        <div class="leader-photo">
+          <div class="frame-corner">N° 05</div>
+          <div class="frame-corner tr">MTL · 2026</div>
+          <div class="initial">B</div>
+          <div class="frame-corner bl">Denver → NYC</div>
+          <div class="frame-corner br">Professor</div>
+        </div>
+        <div class="leader-content">
+          <div class="leader-tag">Philosophy · Late Nights · Bratlantic</div>
+          <h3>Bryan</h3>
+          <p class="bio">From Denver, now in NYC. Philosophy prof at Fordham. Loves bowling, biking, bathhouses, and Bratlantic parties. <em>Here to win, not to make friends.</em> ;)</p>
+          <div class="tidbits">
+            <div class="tidbit"><span class="k">Hometown</span><span class="v">Denver → NYC</span></div>
+            <div class="tidbit"><span class="k">Day job</span><span class="v">Philosophy prof, Fordham</span></div>
+            <div class="tidbit"><span class="k">Loves</span><span class="v">Bowling, biking, bathhouses</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOD ═══════════ -->
+<section class="food" id="food" data-screen-label="07 Food">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 05 — À table</span><span>The list, in roughly the order you should hit it</span></div>
+    <div class="food-head">
+      <h2>Where we'll <em>eat.</em></h2>
+      <p style="font-family: var(--serif); font-size: 20px; line-height: 1.4; color: var(--ink-2);">A short list of group meals, plus the places worth sneaking off to between them. Reservations are made; show up hungry.</p>
+    </div>
+
+    <div class="food-list">
+      <div class="food-row">
+        <div class="num">N°01</div>
+        <div class="name">Schwartz's<span class="fr">Smoked-meat institution · since 1928</span></div>
+        <div class="what">The smoked-meat sandwich. The line is the experience. Order it medium-fat, eat it standing.</div>
+        <div class="hood">Plateau</div>
+        <div class="tag must">Must-do</div>
+      </div>
+      <div class="food-row">
+        <div class="num">N°02</div>
+        <div class="name">Saint-Viateur Bagel<span class="fr">Le meilleur bagel de la ville</span></div>
+        <div class="what">Wood-fired, sweet, dense. Open 24 hours. The Montréal bagel argument starts and ends here.</div>
+        <div class="hood">Mile End</div>
+        <div class="tag must">Must-do</div>
+      </div>
+      <div class="food-row">
+        <div class="num">N°03</div>
+        <div class="name">Marché Atwater<span class="fr">Le marché du samedi</span></div>
+        <div class="what">Saturday lunch HQ. Cheese, charcuterie, oysters, a sandwich from Première Moisson, a peach for the walk back.</div>
+        <div class="hood">Saint-Henri</div>
+        <div class="tag">Marché</div>
+      </div>
+      <div class="food-row">
+        <div class="num">N°04</div>
+        <div class="name">Barranco<span class="fr">Notre dernier repas</span></div>
+        <div class="what">Monday's farewell dinner. Peruvian, family-style, big tables.</div>
+        <div class="hood">Plateau</div>
+        <div class="tag must">Closing</div>
+      </div>
+      <div class="food-row">
+        <div class="num">N°05</div>
+        <div class="name">Olive et Gourmando<span class="fr">Le brunch indispensable</span></div>
+        <div class="what">Sunday brunch — pastries, sandwiches, the best espresso in the Old-Port. Get there before 11.</div>
+        <div class="hood">Old-Port</div>
+        <div class="tag">Brunch</div>
+      </div>
+      <div class="food-row">
+        <div class="num">N°06</div>
+        <div class="name">La Banquise<span class="fr">Poutine, 4 a.m.</span></div>
+        <div class="what">Open all night. 30+ varieties of poutine. The right answer to "we should eat something" at 3 a.m. We're going. No debate.</div>
+        <div class="hood">Plateau</div>
+        <div class="tag late">Late-night</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ NIGHTLIFE ═══════════ -->
+<section class="night" id="night" data-screen-label="08 Nightlife">
+  <div class="wrap">
+    <div class="section-tag" style="border-color: rgba(242,236,224,0.2); color: rgba(242,236,224,0.5);"><span>§ 06 — La nuit</span><span>Doors open at 22 h · The city does not sleep</span></div>
+    <div class="night-head">
+      <h2>And then,<br><em>nightlife.</em></h2>
+      <p class="lede">Montréal closes its bars at 3, but the after-hours kept the city's reputation. A handful of options for whatever you're in the mood for.</p>
+    </div>
+
+    <div class="night-grid">
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-atwater-cocktail-club" shape="rect" fit="cover" placeholder="Atwater Cocktail Club"></image-slot></div>
+        <div class="cat">Cocktail · Speakeasy</div>
+        <h4>Atwater Cocktail Club</h4>
+          <div class="vibe">Velvet booths. Drinks that take 8 minutes.</div>
+          <div class="meta"><span>Saint-Henri</span><span>Until 3 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-vin-mon-lapin" shape="rect" fit="cover" placeholder="Vin Mon Lapin"></image-slot></div>
+        <div class="cat">Wine bar · Natural</div>
+        <h4>Vin Mon Lapin</h4>
+          <div class="vibe">Tiny. Natural wine. Pet-nat and snacks.</div>
+          <div class="meta"><span>Little Italy</span><span>Until 1 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-new-city-gas" shape="rect" fit="cover" placeholder="New City Gas"></image-slot></div>
+        <div class="cat">Dance · House & Techno</div>
+        <h4>New City Gas</h4>
+          <div class="vibe">Big-room dance, names you'll recognize on the lineup.</div>
+          <div class="meta"><span>Griffintown</span><span>Until 3 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-bar-le-saint-sulpice" shape="rect" fit="cover" placeholder="Bar Le Saint-Sulpice"></image-slot></div>
+        <div class="cat">Dive · Cheap & loud</div>
+        <h4>Bar Le Saint-Sulpice</h4>
+          <div class="vibe">Five floors. A garden. The cheapest pitchers in the city.</div>
+          <div class="meta"><span>Quartier Latin</span><span>Until 3 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-upstairs-jazz-bar" shape="rect" fit="cover" placeholder="Upstairs Jazz Bar"></image-slot></div>
+        <div class="cat">Live · Jazz</div>
+        <h4>Upstairs Jazz Bar</h4>
+          <div class="vibe">A basement in the Quartier des Spectacles. Two sets a night.</div>
+          <div class="meta"><span>Downtown</span><span>Until 1 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-terrasse-place-d-armes" shape="rect" fit="cover" placeholder="Terrasse Place D'Armes"></image-slot></div>
+        <div class="cat">Patio · Sunset</div>
+        <h4>Terrasse Place D'Armes</h4>
+          <div class="vibe">Rooftop, basilica view, the long pre-dinner drink.</div>
+          <div class="meta"><span>Old-Port</span><span>Until 23 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-pang-pang" shape="rect" fit="cover" placeholder="Pang Pang"></image-slot></div>
+        <div class="cat">Karaoke</div>
+        <h4>Pang Pang</h4>
+          <div class="vibe">Private rooms. Korean. Bring everyone.</div>
+          <div class="meta"><span>Plateau</span><span>Until 3 h</span></div>
+      </div>
+      <div class="night-card">
+        <div class="night-slot"><image-slot id="night-piknic-lectronik" shape="rect" fit="cover" placeholder="Piknic Électronik"></image-slot></div>
+        <div class="cat">Outdoor · DJ</div>
+        <h4>Piknic Électronik</h4>
+          <div class="vibe">Sundays on the island. Day-into-night. Sunscreen and sneakers.</div>
+          <div class="meta"><span>Parc Jean-Drapeau</span><span>14 h → 21 h</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ RAINY DAY ═══════════ -->
+<section class="rainy" data-screen-label="09 Rainy Day">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 07 — S'il pleut</span><span>Montréal in early September is mostly sunny — but, in case.</span></div>
+    <div class="rainy-layout">
+      <div>
+        <h2>If it <em>rains.</em></h2>
+        <p class="lede">Montréal has a 33-kilometer underground city for exactly this reason. We have backups for the backups.</p>
+      </div>
+      <div class="rainy-list">
+        <div class="rainy-item">
+          <div class="ico">u</div>
+          <div>
+            <div class="name">RÉSO — the Underground City</div>
+            <div class="desc">33 km of tunnels, mostly shopping. Cross the city without a coat.</div>
+          </div>
+          <div class="when">Any time</div>
+        </div>
+        <div class="rainy-item">
+          <div class="ico">m</div>
+          <div>
+            <div class="name">Musée des Beaux-Arts (MMFA)</div>
+            <div class="desc">Five pavilions, a great café, indoor for hours.</div>
+          </div>
+          <div class="when">10 h → 17 h</div>
+        </div>
+        <div class="rainy-item">
+          <div class="ico">h</div>
+          <div>
+            <div class="name">Pointe-à-Callière</div>
+            <div class="desc">Archaeology museum on the founding site of Montréal. Surprisingly cinematic.</div>
+          </div>
+          <div class="when">10 h → 18 h</div>
+        </div>
+        <div class="rainy-item">
+          <div class="ico">s</div>
+          <div>
+            <div class="name">Bota Bota — move it up</div>
+            <div class="desc">A rainy spa day is a great spa day. Same floating boat, just earlier.</div>
+          </div>
+          <div class="when">9 h → 22 h</div>
+        </div>
+        <div class="rainy-item">
+          <div class="ico">c</div>
+          <div>
+            <div class="name">Café-hop the Plateau</div>
+            <div class="desc">Pikolo, Tunnel, Café Olimpico, Myriade. Bring a book or three.</div>
+          </div>
+          <div class="when">7 h → 18 h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PACKING + WEATHER ═══════════ -->
+<section class="pack" data-screen-label="10 Packing">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 08 — La liste</span><span>What to bring · août = pretty perfect weather</span></div>
+    <div class="pack-head">
+      <h2>What to <em>pack.</em></h2>
+      <p style="font-family: var(--serif); font-size: 20px; line-height: 1.4; color: var(--ink-2);">High of 78°F, low of 60°F, mostly sunny, the occasional dramatic rainstorm. Pack like a city — not a beach.</p>
+    </div>
+
+    <div class="pack-grid">
+      <div class="pack-col">
+        <h4>Essentials</h4>
+        <ul>
+          <li>Passport <span class="fr">— international border</span></li>
+          <li>Walking shoes you trust</li>
+          <li>A light layer for evenings</li>
+          <li>Compact umbrella</li>
+          <li>Reusable water bottle</li>
+          <li>Sunglasses</li>
+        </ul>
+      </div>
+      <div class="pack-col">
+        <h4>Looking-the-part</h4>
+        <ul>
+          <li>One nice dinner outfit</li>
+          <li>Something for a rooftop</li>
+          <li>Comfortable jeans <span class="fr">— Plateau uniform</span></li>
+          <li>A great jacket <span class="fr">— for photos</span></li>
+        </ul>
+      </div>
+      <div class="pack-col">
+        <h4>For specific plans</h4>
+        <ul>
+          <li>Swimsuit <span class="fr">— Bota Bota spa</span></li>
+          <li>Sandals or flip-flops</li>
+          <li>Running shoes <span class="fr">— canal run</span></li>
+          <li>A blanket / picnic gear <span class="fr">(we'll share)</span></li>
+        </ul>
+      </div>
+      <div class="pack-col">
+        <h4>Don't forget</h4>
+        <ul>
+          <li>Canadian-friendly cell plan</li>
+          <li>A credit card with no FX fee</li>
+          <li>Some CAD cash for markets</li>
+          <li>Power adapter <span class="fr">— same as US</span></li>
+          <li>Patience for the border</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="weather-card">
+      <div class="head">
+        <span>Forecast · Montréal · Sep 4 — 8, 2026</span>
+        <span>Climate-normal estimate</span>
+      </div>
+      <div class="weather-days">
+        <div class="weather-day">
+          <div class="d">Fri Sep 4</div>
+          <div class="t">75°</div>
+          <div class="c">Sunny</div>
+        </div>
+        <div class="weather-day">
+          <div class="d">Sat Sep 5</div>
+          <div class="t">77°</div>
+          <div class="c">Mostly sunny</div>
+        </div>
+        <div class="weather-day">
+          <div class="d">Sun Sep 6</div>
+          <div class="t">73°</div>
+          <div class="c">A few clouds</div>
+        </div>
+        <div class="weather-day">
+          <div class="d">Mon Sep 7</div>
+          <div class="t">71°</div>
+          <div class="c">Scattered showers</div>
+        </div>
+        <div class="weather-day">
+          <div class="d">Tue Sep 8</div>
+          <div class="t">74°</div>
+          <div class="c">Sunny</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FAQ ═══════════ -->
+<section class="faq" id="faq" data-screen-label="11 FAQ">
+  <div class="wrap">
+    <div class="section-tag"><span>§ 09 — Foire aux questions</span><span>Eleven things people ask · click to expand</span></div>
+    <div class="faq-head">
+      <h2>The <em>fine print.</em></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item is-open">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°01</span>
+          <span class="text">How much does the trip cost?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">
+          The standard Pre-f(x) trip fee covers the house, group meals, the canal-side reservations, and Sunday's rooftop dinner. Optional add-ons (Bota Bota, Biodôme, late-night cover charges) are extra and paid as you go. We'll share a detailed budget breakdown after you RSVP.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°02</span>
+          <span class="text">Do I need a passport?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Yes. Canada is a separate country. A valid US passport (or equivalent) is required to cross the border by air, land, or sea. Make sure it doesn't expire within six months of September 2026.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°03</span>
+          <span class="text">How do I get there?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">YUL (Montréal-Trudeau) is the main airport. Direct flights from BOS are ~90 minutes; from JFK/LGA they're similarly short. Amtrak's Adirondack is scenic but slow. We'll share a group flight-planning thread once everyone's RSVP'd.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°04</span>
+          <span class="text">Do I need to speak French?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">No. Montréal is meaningfully bilingual; almost everyone you'll interact with speaks English. That said — "bonjour," "merci," and "l'addition s'il vous plaît" go a long way. Try.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°05</span>
+          <span class="text">What if I can't make the full trip?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Partial attendance is welcome — flag it in your RSVP. Friday-to-Sunday and Saturday-to-Monday are both fine truncations. We can usually pro-rate.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°06</span>
+          <span class="text">Is the house wheelchair-accessible?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Partially — the ground floor and one bedroom are step-free, but the upper floors are stairs-only. Reach out to the trip leads and we'll work it out, including alternate lodging if needed.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°07</span>
+          <span class="text">Dietary restrictions?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Tell us when you RSVP. Every group meal will have vegetarian / vegan / gluten-free options, and Montréal restaurants are generally great about it. Atwater Market has stalls for everyone.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°08</span>
+          <span class="text">When is the RSVP deadline?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Sooner is better — the house has 18 spots and we'll fill them on a first-paid basis. Hard deadline two weeks before departure for any partial attendance.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°09</span>
+          <span class="text">What's the vibe — is this a party trip or a culture trip?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Both, depending on the hour. Days lean food + culture + outdoors. Nights are flexible — there will always be a group going out and a group staying in. No FOMO either direction.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°10</span>
+          <span class="text">Should I bring a plus-one?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">Pre-f(x) is for incoming Sloanies only. Plus-ones are welcome on the broader MTL summer scene (we'd be happy to recommend things) but not in the house.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('is-open')">
+          <span class="num">N°11</span>
+          <span class="text">Who do I message with questions?</span>
+          <span class="toggle">+</span>
+        </button>
+        <div class="faq-a">The three trip leaders, in the GroupMe you'll be added to after RSVP. For pre-RSVP questions: alex.mtl@sloan.mit.edu (a real one).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CLOSING CTA ═══════════ -->
+<section class="closer" data-screen-label="12 RSVP">
+  <div class="wrap closer-inner">
+    <div class="eyebrow" style="margin: 0 auto;">RSVP — Pre-f(x) Montréal</div>
+    <h2>Come <em>with us.</em></h2>
+    <p class="sub">Four days. One house. Eighteen seats. Don't think about it too long — book the bagel before the bagel books you.</p>
+    <a href="https://sloangroups.mit.edu/mbaprefx/rsvp_boot?id=1935992" target="_blank" rel="noopener" class="big-cta">
+      Reserve a spot <span>→</span>
+    </a>
+    <div class="deadline">Sep 4 — 8, 2026 · Sloan Pre-f(x)</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>Pre-f(x) MTL · MIT Sloan ’28</div>
+    <div>Made with espresso and an unreasonable number of bagels</div>
+    <div>À bientôt</div>
+  </div>
+</footer>
+
+<a href="https://sloangroups.mit.edu/mbaprefx/rsvp_boot?id=1935992" target="_blank" rel="noopener" class="sticky-rsvp">
+  <span class="pulse"></span>
+  RSVP · Sep 4 — 8
+</a>
+
+<!-- ═══════════ MAP DATA + INTERACTION ═══════════ -->
+<script>
+const HOODS = {
+  "plateau": {
+    n: "01", name: "Plateau Mont-Royal", fr: "— Le Plateau", photo: "https://images.unsplash.com/photo-1610042128454-f73e7c5b8b35?w=800&q=80",
+    desc: "Our home base. Mural-covered triplexes with the famous outdoor staircases, café Olimpico on the corner, and Saint-Laurent two streets over. The Sloan-of-Montréal: dense, walkable, opinionated.",
+    spots: [["Schwartz's", "Smoked-meat icon"], ["Saint-Viateur Bagel", "24-hour wood-fired"], ["La Banquise", "Late-night poutine"], ["Parc La Fontaine", "Monday picnic"]],
+    pills: ["Café culture", "Murals", "Walk-everywhere", "Our house"]
+  },
+  "mile-end": {
+    n: "02", name: "Mile End", fr: "— Mile End", photo: "https://images.unsplash.com/photo-1620207418302-439b387441b0?w=800&q=80",
+    desc: "Hip without trying. Bagel shops, vintage stores, the original Drawn & Quarterly, Leonard Cohen's old apartment. Walkable from the Plateau in 15 minutes.",
+    spots: [["Saint-Viateur Bagel", "The original"], ["Fairmount Bagel", "The rival"], ["Drogheria Fine", "$5 gnocchi"], ["Olimpico", "Coffee since '70"]],
+    pills: ["Vintage", "Bagels", "Leonard Cohen", "Saturday morning"]
+  },
+  "old-port": {
+    n: "03", name: "Vieux-Port / Old Montréal", fr: "— Vieux-Montréal", photo: "https://images.unsplash.com/photo-1519178614-68673b201f36?w=800&q=80",
+    desc: "Cobblestone, gas lamps, Notre-Dame Basilica, the river. The most photographed part of the city. We'll spend Saturday morning here and float through it again for Bota Bota on Monday.",
+    spots: [["Notre-Dame Basilica", "Don't skip the inside"], ["Bota Bota", "Floating Nordic spa"], ["Olive et Gourmando", "Sunday brunch"], ["Pointe-à-Callière", "Rainy day museum"]],
+    pills: ["Saturday AM", "Cobblestone", "Bota Bota", "Photography"]
+  },
+  "downtown": {
+    n: "04", name: "Centre-ville", fr: "— Downtown", photo: "https://images.unsplash.com/photo-1569878868067-d2eb6ec6c6fc?w=800&q=80",
+    desc: "Where the underground city lives, the major museums sit, and the Quartier des Spectacles lights up at night. Less charming, more useful. Backup plan for rain.",
+    spots: [["MMFA", "Five-pavilion art museum"], ["Underground City", "33 km of tunnels"], ["Upstairs Jazz", "Live music"], ["Place des Festivals", "Outdoor concerts"]],
+    pills: ["RÉSO", "Museums", "Rainy day", "Jazz"]
+  },
+  "parc": {
+    n: "05", name: "Parc Jean-Drapeau", fr: "— L'île Sainte-Hélène", photo: "https://images.unsplash.com/photo-1518384401463-d3876163c195?w=800&q=80",
+    desc: "Two islands in the middle of the St-Lawrence. The Biosphère (a Buckminster Fuller dome), beaches, and Piknic Électronik on Sundays. Closest thing the city has to its Central Park.",
+    spots: [["La Biosphère", "Fuller's geodesic"], ["Piknic Électronik", "Sunday DJ sets"], ["Plage Jean-Doré", "Urban beach"], ["F1 circuit", "Open to runners"]],
+    pills: ["Sunday DJ", "Biosphere", "Outdoor", "Beach"]
+  },
+  "atwater": {
+    n: "06", name: "Atwater · Saint-Henri", fr: "— Le sud-ouest", photo: "https://images.unsplash.com/photo-1559511260-66a654ae982a?w=800&q=80",
+    desc: "The Lachine Canal runs through here. The Atwater Market is the Saturday lunch destination — Première Moisson for bread, Boucherie du Vieux for charcuterie, the rooftop for the photos.",
+    spots: [["Marché Atwater", "Saturday lunch HQ"], ["Lachine Canal", "Run / bike route"], ["Joe Beef", "Group dinner"], ["Atwater Cocktail Club", "Speakeasy night"]],
+    pills: ["Marché", "Canal", "Joe Beef", "Cocktails"]
+  },
+  "little-italy": {
+    n: "07", name: "Petite-Italie", fr: "— Little Italy", photo: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
+    desc: "Marché Jean-Talon (the city's biggest), espresso bars older than your parents, and the natural-wine scene's epicenter. A whole afternoon's worth of grazing.",
+    spots: [["Marché Jean-Talon", "Bigger than Atwater"], ["Vin Mon Lapin", "Natural wine"], ["Caffè Italia", "1956, no signage"], ["Drogheria Fine", "$5 gnocchi"]],
+    pills: ["Marché", "Wine", "Espresso", "Sunday"]
+  },
+  "village": {
+    n: "08", name: "Le Village", fr: "— The Village", photo: "https://images.unsplash.com/photo-1580229080435-1c129a25ddff?w=800&q=80",
+    desc: "Sainte-Catherine street, summer pedestrian-only, hung with thousands of pink rainbow balls. The center of Montréal's nightlife and a long stretch of patios in the warm months.",
+    spots: [["Cabaret Mado", "Drag legend"], ["Terrasses du Village", "Patio season"], ["Sainte-Catherine", "Pedestrian summer"], ["Beaudry métro", "The pink station"]],
+    pills: ["Nightlife", "Pride", "Patios", "Summer"]
+  }
+};
+
+// lat/lng + label-side for each hood
+const HOOD_GEO = {
+  "plateau":      { ll: [45.5234, -73.5800], side: "right" },
+  "mile-end":     { ll: [45.5252, -73.5990], side: "right" },
+  "old-port":     { ll: [45.5060, -73.5536], side: "left"  },
+  "downtown":     { ll: [45.5017, -73.5673], side: "right" },
+  "parc":         { ll: [45.5145, -73.5300], side: "left"  },
+  "atwater":      { ll: [45.4815, -73.5780], side: "right" },
+  "little-italy": { ll: [45.5380, -73.6135], side: "right" },
+  "village":      { ll: [45.5180, -73.5559], side: "left"  }
+};
+
+const markerEls = {};
+
+const map = L.map("mtl-map", {
+  center: [45.5180, -73.5800],
+  zoom: 12,
+  zoomControl: true,
+  scrollWheelZoom: false,
+  attributionControl: true
+});
+
+L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  maxZoom: 19,
+  subdomains: "abcd"
+}).addTo(map);
+
+Object.entries(HOOD_GEO).forEach(([key, { ll, side }]) => {
+  const label = HOODS[key].name.toUpperCase();
+  const html = `<div class="dot"></div><div class="lbl">${label}</div>`;
+  const icon = L.divIcon({
+    className: `hood-marker ${side === "left" ? "left" : ""}`,
+    html,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
+  const m = L.marker(ll, { icon, riseOnHover: true }).addTo(map);
+  m.on("click", () => selectHood(key));
+  markerEls[key] = m;
+});
+
+function selectHood(key) {
+  const h = HOODS[key];
+  if (!h) return;
+  Object.entries(markerEls).forEach(([k, m]) => {
+    const el = m.getElement();
+    if (el) el.classList.toggle("is-active", k === key);
+  });
+  const panel = document.getElementById("hood-panel");
+  panel.innerHTML = `
+    <div class="num">N° ${h.n} — Quartier</div>
+    <h3>${h.name}</h3>
+    <div class="fr">${h.fr}</div>
+    <div class="photo"><image-slot id="hood-${key}" shape="rect" fit="cover" placeholder="Drop a photo of ${h.name}"></image-slot></div>
+    <p>${h.desc}</p>
+    <ul>
+      ${h.spots.map(([w, when]) => `<li><span class="what">${w}</span><span class="when">${when}</span></li>`).join("")}
+    </ul>
+    <div class="hood-pills">${h.pills.map(p => `<span class="hood-pill">${p}</span>`).join("")}</div>
+  `;
+}
+
+// Initial state
+selectHood("plateau");
+</script>
+
+<!-- Tweaks panel: applies palette + density -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+const root = ReactDOM.createRoot(document.getElementById('__tweaks_root') || (() => {
+  const el = document.createElement('div');
+  el.id = '__tweaks_root';
+  document.body.appendChild(el);
+  return el;
+})());
+
+function applyDensity(d) {
+  const r = document.documentElement;
+  const map = {
+    cozy: { gutter: '32px', section: '64px' },
+    comfy: { gutter: 'clamp(20px, 4vw, 64px)', section: '96px' },
+    airy: { gutter: 'clamp(32px, 6vw, 96px)', section: '128px' }
+  };
+  const m = map[d] || map.comfy;
+  r.style.setProperty('--gutter', m.gutter);
+}
+
+function applyHeadingScale(s) {
+  document.documentElement.style.setProperty('--heading-scale', String(s));
+}
+
+function App() {
+  const defaults = window.__TWEAKS || {};
+  const [t, setTweak] = useTweaks(defaults);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-palette', t.palette || 'cream');
+  }, [t.palette]);
+
+  useEffect(() => { applyDensity(t.density); }, [t.density]);
+
+  useEffect(() => {
+    const css = !t.showAccentItalics ? `
+      .hero-title .accent-word, .itin-head h2 em, .agenda-head h2 em, .agenda-cat-head h3 em, .hoods-head h2 em, .bnb-content h2 em, .food-head h2 em, .night-head h2 em, .rainy h2 em, .pack-head h2 em, .faq-head h2 em, .closer h2 em, .dek-body em, .day-rail .day-name em { color: inherit; font-style: normal; }
+    ` : '';
+    let s = document.getElementById('__tweak_italics');
+    if (!s) { s = document.createElement('style'); s.id = '__tweak_italics'; document.head.appendChild(s); }
+    s.textContent = css;
+  }, [t.showAccentItalics]);
+
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Palette" />
+      <TweakSelect
+        label="Mood"
+        value={t.palette}
+        options={[
+          { value: 'klein', label: 'Klein blue' },
+          { value: 'cream', label: 'Cream + rouge' },
+          { value: 'midnight', label: 'Midnight Montréal' },
+          { value: 'garden', label: 'Botanical' },
+        ]}
+        onChange={(v) => setTweak('palette', v)}
+      />
+      <TweakSection label="Layout" />
+      <TweakRadio
+        label="Density"
+        value={t.density}
+        options={['cozy', 'comfy', 'airy']}
+        onChange={(v) => setTweak('density', v)}
+      />
+      <TweakSection label="Typography" />
+      <TweakToggle
+        label="Red italics"
+        value={t.showAccentItalics}
+        onChange={(v) => setTweak('showAccentItalics', v)}
+      />
+    </TweaksPanel>
+  );
+}
+
+root.render(<App />);
+</script>
+
+</body>
+</html>
