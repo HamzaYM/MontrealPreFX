@@ -1285,8 +1285,8 @@ img { display: block; max-width: 100%; }
 .food-row .tag.late { color: var(--accent-2); border-color: var(--accent-2); }
 
 /* ───────────── NIGHTLIFE ───────────── */
-.night { padding: 96px 0; border-top: 1px solid var(--rule); background: #0e0d12; color: #f2ece0; position: relative; overflow: hidden; }
-.night::before {
+section.night { padding: 96px 0; border-top: 1px solid var(--rule); background: #0e0d12; color: #f2ece0; position: relative; overflow: hidden; }
+section.night::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1294,7 +1294,7 @@ img { display: block; max-width: 100%; }
               radial-gradient(ellipse at 80% 80%, rgba(180,255,90,0.1), transparent 50%);
   pointer-events: none;
 }
-.night > * { position: relative; z-index: 1; }
+section.night > * { position: relative; z-index: 1; }
 .night .eyebrow,
 .night .mono { color: rgba(242,236,224,0.6); }
 .night-head {
